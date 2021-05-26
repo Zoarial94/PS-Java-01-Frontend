@@ -3,11 +3,6 @@ import "./Nodes.css"
 import "./common.css"
 
 class Nodes extends Component {
-  constructor(props) {
-    super(props);
-    console.log("Props: ");
-    console.log(props);
-  }
 
   render() {
     const {data} = this.props;

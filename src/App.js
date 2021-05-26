@@ -3,20 +3,14 @@ import './App.css';
 import FirstComponent from './FirstComponent.js'
 import { compose } from "recompose"
 import React from 'react';
-import StatelessAction from './components/StatelessAction.js'
+import ActionList from './components/ActionList.js'
 import Nodes from "./components/Nodes.js"
 import CustomNavbar from "./components/CustomNavbar"
-import {withMaybe, withEither, withFetching} from "./HOCs.js"
+import {withMaybe, withEither, withFetching, loadingCond, failedFetchCond} from "./HOCs.js"
 
 
-const loadingCond = (props) => {
-  console.log("loading props:")
-  console.log(props);
-  return props.isLoading;
-}
 const actionsEmptyListCond = (props) => !props.data.actions.length;
 const nodesEmptyListCond = (props) => !props.data.nodes.length;
-const failedFetchCond = (props) => props.error;
 
 const EmptyMessage = () =>
   <div>
@@ -48,7 +42,7 @@ const nodesWithConditionalRenderings = compose(
   withEither(nodesEmptyListCond, EmptyMessage)
 );
 
-const RealActionWithConditionalRenderings = realActionWithConditionalRenderings(StatelessAction);
+const RealActionWithConditionalRenderings = realActionWithConditionalRenderings(ActionList);
 const NodesWithConditionalRenderings = nodesWithConditionalRenderings(Nodes)
 
 
