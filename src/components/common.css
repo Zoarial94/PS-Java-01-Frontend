@@ -1,0 +1,72 @@
+/* 
+ * Entire List
+ * This includes header and footer
+*/
+.ObjectsDisplay {
+    border: 4px goldenrod;
+    border-style: solid;
+    box-sizing: border-box;
+    margin: 10px;
+}
+
+/*
+ * Just the list part. 
+ * Only consists Objects
+*/
+.ObjectList {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+/*
+ * An object in the list
+ * Can contain different elements and info lists
+*/ 
+.Object {
+    border: 4px salmon;
+    border-style: solid;
+    box-sizing: border-box;
+    margin: 10px;
+}
+
+.Object * {
+    color: rebeccapurple;
+    margin: 4px;
+}
+
+.Object h3 {
+    color: saddlebrown;
+}
+
+/*
+ * A list, generally with, just text.
+ * Ex:
+        name: {name}
+        Number: {number}
+        Type: {type}
+        etc.
+*/
+.ObjectInfoList {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px gray;
+    border-style: dashed;
+    box-sizing: border-box;
+
+    margin: 0 32px;
+    margin-top: inherit;
+    margin-bottom: inherit;
+}
+
+.ObjectInfoList p {
+    border: 2px cadetblue;
+    border-style: solid;
+    box-sizing: border-box;
+}
