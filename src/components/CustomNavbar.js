@@ -4,6 +4,7 @@ class CustomNavbar extends Component {
 
     render() {
         return (
+            /*
             <nav className="navbar navbar-expand-lg navbar-dark" style={{backgroundColor: "rgb(108, 13, 197)"}}>
                 <div className="container-fluid">
                     <span className="navbar-brand" href="#">Navbar</span>
@@ -45,6 +46,8 @@ class CustomNavbar extends Component {
                     </div>
                 </div>
             </nav>
+            */
+           <div></div>
         )
     }
 }

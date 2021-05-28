@@ -20,14 +20,14 @@ class ActionList extends Component {
     var actions = [];
 
     // Create individual action components
-    props.data.actions.map(action => {
+    props.data.actions.forEach(action => {
       const renderActionInfo = compose(
         withFetchingAction(action.uuid),
         actionWithConditionalRenderings
       );
-
       actions.push([action.uuid, renderActionInfo(Action)])
     });
+
     this.state = { actions };
   }
 
@@ -68,12 +68,17 @@ const actionWithConditionalRenderings = compose(
 )
 
 class Action extends Component {
+  constructor(props) {
+    super(props);
+
+  }
+
   render() {
     const action = this.props.data;
 
     return (
 
-      <div key={action.uuid} className="Action Object">
+      <div key={action.uuid} className="Action Object" onClick={this.handleClick} >
         <h3>{action.name}</h3>
         <h3>{action.uuid}</h3>
         <div className="ObjectInfoList">
