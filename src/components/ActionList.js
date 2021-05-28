@@ -4,13 +4,14 @@ import "./ActionList.css"
 import "./common.css"
 import { withFetching, withEither, failedFetchCond, loadingCond } from "../HOCs"
 import { compose } from "recompose"
+import OutsideClickHandler from 'react-outside-click-handler';
 
-const withFetchingAction = (uuid) => (Component) => 
+const withFetchingAction = (uuid) => (Component) =>
   class WithFetchingAction extends React.Component {
 
     render() {
-      const RenderedFetching = withFetching("http://localhost:8080/api/action/" + uuid)(Component); 
-      return <RenderedFetching/>;
+      const RenderedFetching = withFetching("http://localhost:8080/api/action/" + uuid)(Component);
+      return <RenderedFetching />;
     }
   }
 
@@ -71,24 +72,49 @@ class Action extends Component {
   constructor(props) {
     super(props);
 
+    this.state = { optionsOpen: false };
+    this.handleClick = this.handleClick.bind(this);
+    this.outsideClickHandler = this.outsideClickHandler.bind(this);
+
+  }
+
+  outsideClickHandler() {
+    if (this.state.optionsOpen) {
+      this.setState({ optionsOpen: false })
+    }
+  }
+
+  handleClick() {
+    if (!this.state.optionsOpen) {
+      this.setState({ optionsOpen: true });
+    }
   }
 
   render() {
     const action = this.props.data;
+    const renderOptions = this.state.optionsOpen;
 
     return (
 
-      <div key={action.uuid} className="Action Object" onClick={this.handleClick} >
-        <h3>{action.name}</h3>
-        <h3>{action.uuid}</h3>
-        <div className="ObjectInfoList">
-          <p>Security Level: {action.securityLevel}</p>
-          <p>Arguments: {action.arguments}</p>
-          <p>Local: {action.local.toString()}</p>
-          <p>Encryped: {action.encrypted.toString()}</p>
-          <p>Description: {action.description}</p>
+      <OutsideClickHandler onOutsideClick={this.outsideClickHandler}>
+        <div key={action.uuid} className="Action Object" onClick={this.handleClick} >
+          <h3>{action.name}</h3>
+          <h3>{action.uuid}</h3>
+          <div className="ObjectInfoList">
+            <p>Security Level: {action.securityLevel}</p>
+            <p>Arguments: {action.arguments}</p>
+            <p>Local: {action.local.toString()}</p>
+            <p>Encryped: {action.encrypted.toString()}</p>
+            <p>Description: {action.description}</p>
+          </div>
+          {renderOptions &&
+            <div className="ObjectActions">
+              <h3>Here are {action.name}'s actions</h3>
+              <button>Run</button>
+            </div>
+          }
         </div>
-      </div>
+      </OutsideClickHandler>
     );
   }
 }
