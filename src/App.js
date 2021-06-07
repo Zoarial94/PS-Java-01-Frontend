@@ -47,6 +47,17 @@ const nodesWithConditionalRenderings = compose(
 const RealActionWithConditionalRenderings = realActionWithConditionalRenderings(ActionList);
 const NodesWithConditionalRenderings = nodesWithConditionalRenderings(Nodes)
 
+const noNodeUUIDCond = (props) => !props.withNodeUUID;
+const AllActionsHeader = () => <h2>All Actions: </h2>
+const ActionListHeader = (props) => {
+  const actions = props.actions;
+  const nodeUUID = props.nodeUUID;
+  return <h2>Actions(s): {actions.length}</h2>
+}
+const actionListHeaderWithConditionalRenderings = compose(
+  withEither(noNodeUUIDCond, AllActionsHeader)
+)
+const EnhancedActionListHeader = actionListHeaderWithConditionalRenderings(ActionListHeader);
 const ListsContainer = (props) => {
 
   const [selectedNode, setSelectedNode] = useState(null);
@@ -54,7 +65,7 @@ const ListsContainer = (props) => {
   return (
     <div className="ListsContainer">
       <NodesWithConditionalRenderings updateSelectedNode={setSelectedNode} />
-      <RealActionWithConditionalRenderings nodeUUID={selectedNode} />
+      <RealActionWithConditionalRenderings nodeUUID={selectedNode} header={EnhancedActionListHeader} />
     </div>
   )
 }

@@ -46,9 +46,11 @@ class ActionList extends Component {
 
   render() {
     const actions = this.state.allActions;
+    const Header = this.props.header;
+    console.log(actions);
     return (
       <div className="Actions ObjectsDisplay">
-        <h2>Actions(s): {actions.length}</h2>
+        <Header actions={actions} withNodeUUID={this.props.nodeUUID} />
         <div className="ObjectList">
           {actions.map(dict => {
             const Action = dict[1]
@@ -86,10 +88,13 @@ const emptyValueCond = (props) => !props.value || !props.value.trim().length;
 const NameValueDisplay = (props) => {
   return <p>{props.name}: {props.value}</p>;
 }
-const enhanceNameValueDisplay = compose(
+const enhanceNameValueDisplayForActionListHeader = compose(
   branch(emptyValueCond, withProps({ value: "No provided value" }))
 )
-const EnhancedNameValueDisplay = enhanceNameValueDisplay(NameValueDisplay);
+const enhanceNameValueDisplayForDescritption = compose(
+  branch(emptyValueCond, withProps({ value: "No provided value" }))
+)
+const EnhancedNameValueDisplayForDescription = enhanceNameValueDisplayForDescritption(NameValueDisplay);
 
 
 /*
@@ -185,7 +190,7 @@ class Action extends Component {
               <p>Arguments: {action.arguments}</p>
               <p>Local: {action.local.toString()}</p>
               <p>Encryped: {action.encrypted.toString()}</p>
-              <EnhancedNameValueDisplay name="Description" value={action.description} />
+              <EnhancedNameValueDisplayForDescription name="Description" value={action.description} />
             </div>
             }
           </div>
