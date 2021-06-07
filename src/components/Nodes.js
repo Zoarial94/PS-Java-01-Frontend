@@ -3,6 +3,10 @@ import "./Nodes.css"
 import "./common.css"
 
 class Nodes extends Component {
+  constructor(props) {
+    super(props)
+
+  }
 
   render() {
     const { data } = this.props;
@@ -13,7 +17,7 @@ class Nodes extends Component {
         <h2>Node(s): {nodes.length}</h2>
         <div className="ObjectList">
           {nodes.map(node =>
-            <div key={node.uuid} className="Node Object">
+            <div key={node.uuid} className="Node Object" onClick={() => {console.log(this.props);this.props.updateSelectedNode(node.uuid)}}>
               <h3>{node.hostname}</h3>
               <h3>{node.uuid}</h3>
               <div className="ObjectInfoList">

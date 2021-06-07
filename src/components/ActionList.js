@@ -9,39 +9,50 @@ import { KeyValueDisplay } from "./CommonComponents";
 
 const withFetchingAction = (uuid) => (Component) =>
   class WithFetchingAction extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {toRender: withFetching("http://localhost:8080/api/action/" + uuid)(Component)};
+    }
 
     render() {
-      const RenderedFetching = withFetching("http://localhost:8080/api/action/" + uuid)(Component);
+      let RenderedFetching = this.state.toRender;
       return <RenderedFetching {...this.props} />;
     }
   }
 
+const withNodeUUID = (Component) => (props) => {
+  const cond = () => props.data && props.withNodeUUID && props.withNodeUUID !== props.data.nodeUuid
+  const Render = withMaybe(cond)(Component);
+  return <Render {...props} />
+}
+
 class ActionList extends Component {
   constructor(props) {
     super(props);
-    var actions = [];
+    let allActions = [];
 
     // Create individual action components
     props.data.actions.forEach(action => {
       const renderActionInfo = compose(
         withFetchingAction(action.uuid),
-        fetchingWithConditionalRenderings
+        fetchingWithConditionalRenderings,
+        withNodeUUID,
       );
-      actions.push([action.uuid, renderActionInfo(Action)])
+      allActions.push([action.uuid, renderActionInfo(Action)])
     });
 
-    this.state = { actions };
+    this.state = { allActions };
   }
 
   render() {
-    const actions = this.state.actions;
+    const actions = this.state.allActions;
     return (
       <div className="Actions ObjectsDisplay">
         <h2>Actions(s): {actions.length}</h2>
         <div className="ObjectList">
           {actions.map(dict => {
             const Action = dict[1]
-            return < Action key={dict[0]} />;
+            return < Action uuid={dict[0]} key={dict[0]} withNodeUUID={this.props.nodeUUID} />;
           })}
         </div>
       </div>
@@ -92,15 +103,15 @@ const withFetchingRunAction = (Component) => (props) => {
   return <RenderedFetching {...props} />;
 }
 const withFetchDataAsString = (Component) => (props) => {
-  const {data, passThoughProps} = props;
+  const { data, passThoughProps } = props;
   var output;
-  if(typeof data === "object") {
+  if (typeof data === "object") {
     output = JSON.stringify(data);
   } else {
     output = data;
   }
 
-  return <Component data={output} {...passThoughProps}/>
+  return <Component data={output} {...passThoughProps} />
 }
 const noUrlCondition = (props) => !props.postUrl
 const enhanceZioTResponse = compose(
@@ -129,7 +140,7 @@ class Action extends Component {
 
   outsideClickHandler() {
     if (this.state.optionsOpen) {
-      this.setState({ optionsOpen: false, postUrl:null})
+      this.setState({ optionsOpen: false, postUrl: null })
     }
   }
 
@@ -156,7 +167,7 @@ class Action extends Component {
     const runAction = (e) => {
       e.preventDefault();
       const formParams = new URLSearchParams(new FormData(e.target).entries()).toString();
-      this.setState({postUrl:"http://localhost:8080/api/action/" + action.uuid + "/run?" + formParams})
+      this.setState({ postUrl: "http://localhost:8080/api/action/" + action.uuid + "/run?" + formParams })
     }
 
     return (
@@ -185,7 +196,7 @@ class Action extends Component {
                 {getRunFields()}
                 <input type="submit" value="Run" />
               </form>
-              <EnhancedZIoTResponse postUrl={this.state.postUrl}/>
+              <EnhancedZIoTResponse postUrl={this.state.postUrl} />
             </div>
           }
         </div>

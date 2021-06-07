@@ -2,15 +2,14 @@ import logo from './logo.svg';
 import './App.css';
 import FirstComponent from './FirstComponent.js'
 import { compose } from "recompose"
-import React from 'react';
+import React, { useState } from 'react';
 import ActionList from './components/ActionList.js'
 import Nodes from "./components/Nodes.js"
 import CustomNavbar from "./components/CustomNavbar"
-import {withMaybe, withEither, withFetching, loadingCond, failedFetchCond} from "./HOCs.js"
+import { withMaybe, withEither, withFetching, loadingCond, failedFetchCond } from "./HOCs.js"
 
 
 const actionsEmptyListCond = (props) => !props.data.actions.length;
-const nodesEmptyListCond = (props) => !props.data.nodes.length;
 
 const EmptyMessage = () =>
   <div>
@@ -35,6 +34,9 @@ const realActionWithConditionalRenderings = compose(
   withEither(actionsEmptyListCond, EmptyMessage)
 );
 
+
+const nodesEmptyListCond = (props) => !props.data.nodes.length;
+
 const nodesWithConditionalRenderings = compose(
   withFetching("http://localhost:8080/api/nodes"),
   withEither(loadingCond, LoadingIndictor),
@@ -45,19 +47,38 @@ const nodesWithConditionalRenderings = compose(
 const RealActionWithConditionalRenderings = realActionWithConditionalRenderings(ActionList);
 const NodesWithConditionalRenderings = nodesWithConditionalRenderings(Nodes)
 
+const ListsContainer = (props) => {
+
+  const [selectedNode, setSelectedNode] = useState(null);
+
+  return (
+    <div className="ListsContainer">
+      <NodesWithConditionalRenderings updateSelectedNode={setSelectedNode} />
+      <RealActionWithConditionalRenderings nodeUUID={selectedNode} />
+    </div>
+  )
+}
 
 function App() {
+  const [opened, setOpened] = useState(false);
+
+  const openApp = () => {
+    setOpened(true);
+  }
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          This will be mine
-        </p>
-        <div className="ListsContainer">
-          <RealActionWithConditionalRenderings />
-          <NodesWithConditionalRenderings />
-        </div>
+        {!opened &&
+          <div>
+            <p style={{ display: 'inline' }}>This will be mine</p>
+            <button onClick={openApp} style={{ margin: "4px" }}  >Start</button>
+          </div>
+        }
+        {opened &&
+          <ListsContainer />
+        }
       </header>
     </div>
   );
