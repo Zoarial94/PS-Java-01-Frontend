@@ -7,6 +7,7 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import { KeyValueDisplay } from "./CommonComponents";
 
 
+/*
 const withFetchingAction = (uuid) => (Component) =>
   class WithFetchingAction extends React.Component {
     constructor(props) {
@@ -80,9 +81,6 @@ const fetchingWithConditionalRenderings = compose(
   withEither(failedFetchCond, FailedFetchIndicator),
 )
 
-/*
- *  Name Value Display
-*/
 const emptyValueCond = (props) => !props.value || !props.value.trim().length;
 const NameValueDisplay = (props) => {
   return <p>{props.name}: {props.value}</p>;
@@ -96,9 +94,6 @@ const enhanceNameValueDisplayForDescritption = compose(
 const EnhancedNameValueDisplayForDescription = enhanceNameValueDisplayForDescritption(NameValueDisplay);
 
 
-/*
- *  ZIoTResponse
-*/
 const ActionResponse = (props) => {
   return <p>{props.data}</p>
 }
@@ -125,88 +120,38 @@ const enhanceZioTResponse = compose(
   withFetchDataAsString
 )
 const EnhancedZIoTResponse = enhanceZioTResponse(ActionResponse)
+ */
 
-class Action extends Component {
-  constructor(props) {
-    super(props);
+/* 
+ * NEW STUFF
+*/
 
-    this.state = { optionsOpen: false, renderInfo: false };
-    this.handleClick = this.handleClick.bind(this);
-    this.outsideClickHandler = this.outsideClickHandler.bind(this);
-    this.toggleActionInfo = this.toggleActionInfo.bind(this);
-
-  }
-
-  toggleActionInfo(e) {
-    e.stopPropagation();
-    this.setState({ renderInfo: !this.state.renderInfo });
-  }
-
-  outsideClickHandler() {
-    if (this.state.optionsOpen) {
-      this.setState({ optionsOpen: false, postUrl: null })
-    }
-  }
-
-  handleClick() {
-    if (!this.state.optionsOpen) {
-      this.setState({ optionsOpen: true });
-    }
-  }
-
-  render() {
-    const action = this.props.data;
-    const renderOptions = this.state.optionsOpen;
-    const renderInfo = this.state.renderInfo;
-    const getRunFields = () => {
-      let content = [];
-      if (renderOptions) {
-        for (var i = 0; i < action.arguments; i++) {
-          const id = `arg${i}`;
-          content.push(<input type="text" key={action.name + id} id={id} name={id}></input>)
-        }
-      }
-      return content;
-    }
-    const runAction = (e) => {
-      e.preventDefault();
-      const formParams = new URLSearchParams(new FormData(e.target).entries()).toString();
-      this.setState({ postUrl: "http://localhost:8080/api/action/" + action.uuid + "/run?" + formParams })
-    }
-
-    return (
-
-      <OutsideClickHandler onOutsideClick={this.outsideClickHandler} >
-        <div key={action.uuid} className="Action Object" onClick={this.handleClick} >
-          <h3>{action.name}</h3>
-          <h3>{action.uuid}</h3>
-          <div className="ObjectInfoList">
-            <h3>Action Info</h3>
-            <button onClick={this.toggleActionInfo}>Toggle Info</button>
-            {renderInfo && <div>
-              <p>Node UUID: {action.nodeUuid}</p>
-              <p>Security Level: {action.securityLevel}</p>
-              <p>Arguments: {action.arguments}</p>
-              <p>Local: {action.local.toString()}</p>
-              <p>Encryped: {action.encrypt.toString()}</p>
-              <EnhancedNameValueDisplayForDescription name="Description" value={action.description} />
-            </div>
-            }
-          </div>
-          {renderOptions &&
-            <div className="ObjectActions" >
-              <h3>Here are {action.name}'s actions</h3>
-              <form onSubmit={runAction}>
-                {getRunFields()}
-                <input type="submit" value="Run" />
-              </form>
-              <EnhancedZIoTResponse postUrl={this.state.postUrl} />
-            </div>
-          }
-        </div>
-      </OutsideClickHandler>
-    );
-  }
+const ActionListHeader = (props) => {
+  return (<><h2>Actions(s) for</h2> <h2>{props.nodeUUID}: {props.listLen}</h2></>)
 }
 
-export default ActionList
+const noNodeUUIDCond = (props) => !props.nodeUUID;
+const AllActionsHeader = (props) => <h2>All Actions ({props.listLen}) </h2>
+const filterActions = (props) => {
+}
+
+const actionListHeaderWithConditionalRenderings = compose(
+  withEither(noNodeUUIDCond, AllActionsHeader)
+)
+const EnhancedHeader = actionListHeaderWithConditionalRenderings(ActionListHeader);
+
+const Actions = (props) => {
+    console.log(props)
+
+    const actions = React.Children.toArray(props.children);
+    return( 
+      <div className="Actions ObjectsDisplay">
+        <EnhancedHeader listLen={actions.length} nodeUUID={props.nodeUUID} />
+        <div className="ObjectList">
+            {actions}
+        </div>
+      </div>
+    )
+}
+
+export default Actions;

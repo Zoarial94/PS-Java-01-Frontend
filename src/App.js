@@ -6,7 +6,9 @@ import React, { useState } from 'react';
 import ActionList from './components/ActionList.js'
 import Nodes from "./components/Nodes.js"
 import CustomNavbar from "./components/CustomNavbar"
-import { withMaybe, withEither, withFetching, loadingCond, failedFetchCond } from "./HOCs.js"
+import { withMaybe, withEither, withFetching, withNewFetching, loadingCond, failedFetchCond } from "./HOCs.js"
+import Actions from "./components/Actions"
+import Action from "./components/Action"
 
 
 const actionsEmptyListCond = (props) => !props.data.actions.length;
@@ -58,20 +60,32 @@ const actionListHeaderWithConditionalRenderings = compose(
   withEither(noNodeUUIDCond, AllActionsHeader)
 )
 const EnhancedActionListHeader = actionListHeaderWithConditionalRenderings(ActionListHeader);
+
+const enhanceActions = compose()
+const EnhancedActions = enhanceActions(Actions)
+
 const ListsContainer = (props) => {
 
   const [selectedNode, setSelectedNode] = useState(null);
+   
+  console.log(props.actions)
 
   return (
     <div className="ListsContainer">
       <NodesWithConditionalRenderings updateSelectedNode={setSelectedNode} />
-      <RealActionWithConditionalRenderings nodeUUID={selectedNode} header={EnhancedActionListHeader} />
+      <EnhancedActions nodeUUID={selectedNode}>
+        {props.actions.map(action => {
+          return <Action key={action.UUID} {...action} />
+        })}
+      </EnhancedActions>
     </div>
   )
 }
 
-function App() {
+const App = (props) => {
   const [opened, setOpened] = useState(false);
+  const [nodes, setNodes] = useState(props.nodesData.nodes);
+  const [actions, setActions] = useState(props.actionsData.actions);
 
   const openApp = () => {
     setOpened(true);
@@ -88,11 +102,27 @@ function App() {
           </div>
         }
         {opened &&
-          <ListsContainer />
+          <ListsContainer actions={actions} />
         }
       </header>
     </div>
   );
 }
 
-export default App;
+const nodesLoadingCond = (props) => props.nodesIsLoading;
+const actionsLoadingCond = (props) => props.actionsIsLoading;
+const nodesErrorCond = (props) => props.nodesError;
+const actionsErrorCond = (props) => props.actionsError;
+
+const enhanceApp = compose(
+  withNewFetching("http://localhost:8080/api/nodes", "nodes"),
+  withNewFetching("http://localhost:8080/api/actions", "actions"),
+  withEither(nodesLoadingCond, LoadingIndictor),
+  withEither(actionsLoadingCond, LoadingIndictor),
+  withEither(nodesErrorCond, FailedFetchIndicator),
+  withEither(actionsErrorCond, FailedFetchIndicator),
+);
+
+const EnhancedApp = enhanceApp(App)
+
+export default EnhancedApp;
