@@ -13,7 +13,7 @@ export const withEither = (conditionalRenderingFn, EitherComponent) => (Componen
     class withEither extends React.Component {
         render() {
             return conditionalRenderingFn(this.props)
-                ? <EitherComponent />
+                ? <EitherComponent {...this.props} />
                 : <Component {...this.props} />
         }
     }

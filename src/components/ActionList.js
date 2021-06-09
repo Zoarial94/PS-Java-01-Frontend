@@ -1,5 +1,4 @@
 import React, { Component, useState } from 'react';
-import "./ActionList.css"
 import "./common.css"
 import { withFetching, withEither, withMaybe, failedFetchCond, loadingCond, branch, withPosting } from "../HOCs"
 import { compose, withProps, withState } from "recompose"
@@ -107,7 +106,7 @@ const withFetchingRunAction = (Component) => (props) => {
   return <RenderedFetching {...props} />;
 }
 const withFetchDataAsString = (Component) => (props) => {
-  const { data, passThoughProps } = props;
+  const { data, ...passThoughProps } = props;
   var output;
   if (typeof data === "object") {
     output = JSON.stringify(data);

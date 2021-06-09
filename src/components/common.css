@@ -5,8 +5,12 @@
 .ObjectsDisplay {
     border: 4px goldenrod;
     border-style: solid;
-    box-sizing: border-box;
-    margin: 10px;
+    margin: 8px;
+    padding: 8px;
+    display: flex;
+    flex-flow: column;
+    flex: 0 0 26em;
+    max-width: 26em;
 }
 
 /*
@@ -14,11 +18,15 @@
  * Only consists Objects
 */
 .ObjectList {
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-color: lawngreen;
+    border-style: groove;
     display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
+    flex-flow: column;
+    margin: 10px;
+    flex-grow: 0;
+    padding: 8px;
 }
 
 /*
@@ -29,7 +37,7 @@
     border: 4px salmon;
     border-style: solid;
     box-sizing: border-box;
-    margin: 10px;
+    margin: 10px 0;
 }
 
 .Object * {
@@ -39,6 +47,12 @@
 
 .Object h3 {
     color: saddlebrown;
+}
+
+.ObjectInfo {
+    border: 2px gray;
+    border-style: dashed;
+    box-sizing: border-box;
 }
 
 /*
@@ -51,7 +65,7 @@
 */
 .ObjectInfoList {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
@@ -60,9 +74,10 @@
     border-style: dashed;
     box-sizing: border-box;
 
-    margin: 0 32px;
+    margin: 0 8px;
     margin-top: inherit;
     margin-bottom: inherit;
+
 }
 
 .ObjectInfoList p {

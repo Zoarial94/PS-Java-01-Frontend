@@ -61,19 +61,37 @@ const actionListHeaderWithConditionalRenderings = compose(
 )
 const EnhancedActionListHeader = actionListHeaderWithConditionalRenderings(ActionListHeader);
 
-const enhanceActions = compose()
+const filterActions = (Component) => (props) => {
+  console.log(props)
+  if (!props.node) {
+    return <Component {...props} />
+  }
+
+  const input = React.Children.toArray(props.children);
+
+  let passActions = input.filter(action => action.props.nodeUUID === props.node.UUID)
+
+  let { children, ...passThoughProps } = props;
+
+  return <Component children={passActions} {...passThoughProps} />
+}
+
+const enhanceActions = compose(
+  filterActions,
+
+)
 const EnhancedActions = enhanceActions(Actions)
 
 const ListsContainer = (props) => {
 
   const [selectedNode, setSelectedNode] = useState(null);
-   
+
   console.log(props.actions)
 
   return (
     <div className="ListsContainer">
-      <NodesWithConditionalRenderings updateSelectedNode={setSelectedNode} />
-      <EnhancedActions nodeUUID={selectedNode}>
+      <NodesWithConditionalRenderings id="NodesList" updateSelectedNode={setSelectedNode} />
+      <EnhancedActions id="ActionsList" node={selectedNode}>
         {props.actions.map(action => {
           return <Action key={action.UUID} {...action} />
         })}

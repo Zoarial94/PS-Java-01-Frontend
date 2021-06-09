@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react';
-import "./ActionList.css"
 import "./common.css"
+import "./Actions.css"
 import { withFetching, withEither, withMaybe, failedFetchCond, loadingCond, branch, withPosting } from "../HOCs"
 import { compose, withProps, withState } from "recompose"
 import OutsideClickHandler from 'react-outside-click-handler';
@@ -102,7 +102,7 @@ const withFetchingRunAction = (Component) => (props) => {
   return <RenderedFetching {...props} />;
 }
 const withFetchDataAsString = (Component) => (props) => {
-  const { data, passThoughProps } = props;
+  const { data, ...passThoughProps } = props;
   var output;
   if (typeof data === "object") {
     output = JSON.stringify(data);
@@ -127,31 +127,29 @@ const EnhancedZIoTResponse = enhanceZioTResponse(ActionResponse)
 */
 
 const ActionListHeader = (props) => {
-  return (<><h2>Actions(s) for</h2> <h2>{props.nodeUUID}: {props.listLen}</h2></>)
+  return (<><h2>Actions(s) for <span className="ActionsNodeHostname">{props.node.hostname}</span>: {props.listLen}</h2></>)
 }
 
-const noNodeUUIDCond = (props) => !props.nodeUUID;
+const noNodeCond = (props) => !props.node;
 const AllActionsHeader = (props) => <h2>All Actions ({props.listLen}) </h2>
-const filterActions = (props) => {
-}
 
 const actionListHeaderWithConditionalRenderings = compose(
-  withEither(noNodeUUIDCond, AllActionsHeader)
+  withEither(noNodeCond, AllActionsHeader)
 )
 const EnhancedHeader = actionListHeaderWithConditionalRenderings(ActionListHeader);
 
 const Actions = (props) => {
-    console.log(props)
+  console.log(props)
 
-    const actions = React.Children.toArray(props.children);
-    return( 
-      <div className="Actions ObjectsDisplay">
-        <EnhancedHeader listLen={actions.length} nodeUUID={props.nodeUUID} />
-        <div className="ObjectList">
-            {actions}
-        </div>
+  const actions = React.Children.toArray(props.children);
+  return (
+    <div className="Actions ObjectsDisplay">
+      <EnhancedHeader listLen={actions.length} node={props.node} />
+      <div className="ObjectList">
+        {actions}
       </div>
-    )
+    </div>
+  )
 }
 
 export default Actions;

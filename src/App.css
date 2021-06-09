@@ -39,12 +39,18 @@
 
 .ListsContainer {
   margin: auto;
-  width: calc(100% - 8vw);
+  margin-bottom: 4vh;
+  margin-top: 4vh;
+  width: 92vw;
   display: flex;
   flex-direction: row;
-  overflow-x: scroll;
+  overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
   border:#61dafb;
   border-width: 2px;
   border-style: dotted;
+  height: 92vh;
+    scrollbar-width: thin;
+    scrollbar-color: blueviolet lightgreen;
 }
