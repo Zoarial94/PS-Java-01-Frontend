@@ -9,8 +9,7 @@
     padding: 8px;
     display: flex;
     flex-flow: column;
-    flex: 0 0 26em;
-    max-width: 26em;
+    flex: 1 0 20em;
 }
 
 /*
@@ -25,7 +24,6 @@
     display: flex;
     flex-flow: column;
     margin: 10px;
-    flex-grow: 0;
     padding: 8px;
 }
 
