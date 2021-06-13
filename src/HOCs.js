@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 
 export const loadingCond = (props) => props.isLoading;
@@ -52,39 +52,60 @@ export const withPosting = (url) => (Component) =>
         }
     }
 
-export const withNewFetching = (url, saveTo = "data") => (Component) =>
-    class WithFetching extends React.Component {
-        constructor(props) {
-            super(props);
+export const withNewFetching = (url, saveTo = "data") => (Component) => (props) => {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null);
 
-            this.state = {
-                [saveTo + "Data"]: null,
-                [saveTo + "IsLoading"]: true,
-                [saveTo + "Error"]: null,
-            };
-        }
+    useEffect(() => {
+        setLoading(true);
+        axios.get(url)
+            .then(result => {
+                setData(result.data);
+                setError(null);
+                setLoading(false);
+            })
+            .catch(error => {
+                setError(error);
+                setData(null);
+                setLoading(false);
+            });
 
-        componentDidMount() {
-            //console.log("Fetching: " + url);
-            axios.get(url)
-                .then(result => {
-                    this.setState({
-                        [saveTo + "Data"]: result.data,
-                        [saveTo + "IsLoading"]: false,
-                    });
-                })
-                .catch(error => this.setState({
-                    [saveTo + "Error"]: error,
-                    [saveTo + "IsLoading"]: false,
-                }));
+    }, [props.counter])
 
-            // Maybe setup a timer to check for updates
-        }
+    const retProps = {[saveTo + "Data"]:data,[saveTo+"IsLoading"]:loading, [saveTo+"Error"]:error, ...props}
+    
+    return <Component {...retProps} />;
+}
 
-        render() {
-            return <Component {...this.props} {...this.state} />;
-        }
-    }
+
+export const withNewPostFetching = (url, saveTo = "data") => (Component) => (props) => {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        setLoading(true);
+        axios.post(url)
+            .then(result => {
+                setData(result.data);
+                setError(null)
+                setLoading(false);
+            })
+            .catch(error => {
+                setError(error);
+                setData(null)
+                setLoading(false);
+            });
+
+    }, [props.counter])
+
+    const retProps = {[saveTo + "Data"]:data,[saveTo+"IsLoading"]:loading, [saveTo+"Error"]:error, ...props}
+    
+    return <Component {...retProps} />;
+}
+
+
 export const withFetching = (url) => (Component) =>
     class WithFetching extends React.Component {
         constructor(props) {

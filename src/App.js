@@ -1,14 +1,16 @@
 import logo from './logo.svg';
 import './App.css';
-import FirstComponent from './FirstComponent.js'
 import { compose } from "recompose"
+import axios from "axios";
 import React, { useState } from 'react';
 import ActionList from './components/ActionList.js'
 import Nodes from "./components/Nodes.js"
 import CustomNavbar from "./components/CustomNavbar"
-import { withMaybe, withEither, withFetching, withNewFetching, loadingCond, failedFetchCond } from "./HOCs.js"
+import { withMaybe, withEither, withFetching, withNewFetching, withNewPostFetching, loadingCond, failedFetchCond } from "./HOCs.js"
 import Actions from "./components/Actions"
 import Action from "./components/Action"
+import Login from "./components/LoginComponent/Login"
+import { useParams } from 'react-router';
 
 
 const actionsEmptyListCond = (props) => !props.data.actions.length;
@@ -40,7 +42,7 @@ const realActionWithConditionalRenderings = compose(
 const nodesEmptyListCond = (props) => !props.data.nodes.length;
 
 const nodesWithConditionalRenderings = compose(
-  withFetching("http://localhost:8080/api/nodes"),
+  withFetching("/api/nodes"),
   withEither(loadingCond, LoadingIndictor),
   withEither(failedFetchCond, FailedFetchIndicator),
   withEither(nodesEmptyListCond, EmptyMessage)
@@ -101,28 +103,25 @@ const ListsContainer = (props) => {
 }
 
 const App = (props) => {
-  const [opened, setOpened] = useState(false);
   const [nodes, setNodes] = useState(props.nodesData.nodes);
   const [actions, setActions] = useState(props.actionsData.actions);
 
-  const openApp = () => {
-    setOpened(true);
+  const logout = () => {
+    axios.post("/user/logout")
+      .then(result => {
+        props.updateCounter()
+      })
+      .catch(error => {
+      });
+
+
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        {!opened &&
-          <div>
-            <p style={{ display: 'inline' }}>This will be mine</p>
-            <button onClick={openApp} style={{ margin: "4px" }}  >Start</button>
-          </div>
-        }
-        {opened &&
-          <ListsContainer actions={actions} />
-        }
-      </header>
+    <div>
+      <button onClick={logout}>Logout</button>
+      <img src={logo} className="App-logo" alt="logo" />
+      <ListsContainer actions={actions} />
     </div>
   );
 }
@@ -132,9 +131,23 @@ const actionsLoadingCond = (props) => props.actionsIsLoading;
 const nodesErrorCond = (props) => props.nodesError;
 const actionsErrorCond = (props) => props.actionsError;
 
+const loginLoadingCond = (props) => props.loginTestLoading;
+const loggedOutCond = (props) => props.loginTestError;
+
+const LoggedOutIndicator = (props) =>
+  <div>
+    <h2>You are not logged in</h2>
+    <Login updateCounter={props.updateCounter} />
+  </div>
+
+
+//TODO: separate out the login/App so the nodes and actions requests aren't sent until the user is logged in
 const enhanceApp = compose(
-  withNewFetching("http://localhost:8080/api/nodes", "nodes"),
-  withNewFetching("http://localhost:8080/api/actions", "actions"),
+  withNewFetching("/user/", "loginTest"),
+  withEither(loadingCond, LoadingIndictor),
+  withEither(loggedOutCond, LoggedOutIndicator),
+  withNewFetching("/api/nodes", "nodes"),
+  withNewFetching("/api/actions", "actions"),
   withEither(nodesLoadingCond, LoadingIndictor),
   withEither(actionsLoadingCond, LoadingIndictor),
   withEither(nodesErrorCond, FailedFetchIndicator),
@@ -143,4 +156,32 @@ const enhanceApp = compose(
 
 const EnhancedApp = enhanceApp(App)
 
-export default EnhancedApp;
+const AppManager = (props) => {
+  const [opened, setOpened] = useState(false);
+  const [counter, setCounter] = useState(0);
+  const openApp = () => {
+    setOpened(true);
+  }
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        {!opened &&
+          <div>
+            <p style={{ display: 'inline' }}>This will be mine</p>
+            <button onClick={openApp} style={{ margin: "4px" }}  >Start</button>
+          </div>
+        }
+        {
+          opened &&
+          <EnhancedApp counter={counter} updateCounter={() => {
+            setCounter(counter + 1)
+            console.log("Updated counter: " + counter)
+          }} />
+        }
+      </header>
+    </div>)
+}
+
+
+export default AppManager;
