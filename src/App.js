@@ -11,7 +11,7 @@ import Actions from "./components/Actions"
 import Action from "./components/Action"
 import Login from "./components/LoginComponent/Login"
 import { useParams } from 'react-router';
-
+import EditingAction from './components/Action/EditingAction';
 
 const actionsEmptyListCond = (props) => !props.data.actions.length;
 
@@ -87,17 +87,28 @@ const EnhancedActions = enhanceActions(Actions)
 const ListsContainer = (props) => {
 
   const [selectedNode, setSelectedNode] = useState(null);
+  const [editingAction, setEditingAction] = useState(null);
 
   console.log(props.actions)
 
   return (
     <div className="ListsContainer">
       <NodesWithConditionalRenderings id="NodesList" updateSelectedNode={setSelectedNode} />
+
       <EnhancedActions id="ActionsList" node={selectedNode}>
         {props.actions.map(action => {
-          return <Action key={action.UUID} {...action} />
+          return <Action key={action.UUID}
+                  updateEditingAction={(UUID) => setEditingAction(UUID)}
+                  {...action}
+                />
         })}
       </EnhancedActions>
+
+      <EditingAction
+        action={props.actions.find((action) => action.UUID === editingAction)} 
+        updateEditingAction={(UUID) => setEditingAction(UUID)}
+      />
+
     </div>
   )
 }
@@ -168,7 +179,7 @@ const AppManager = (props) => {
       <header className="App-header">
         {!opened &&
           <div>
-            <p style={{ display: 'inline' }}>This will be mine</p>
+            <p style={{ display: 'inline' }}>This is the beginning</p>
             <button onClick={openApp} style={{ margin: "4px" }}  >Start</button>
           </div>
         }

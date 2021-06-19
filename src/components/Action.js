@@ -91,12 +91,17 @@ const ActionOptions = (props) => {
     setCounter(counter + 1);
   }
 
+  const updateEditingAction = (e) => {
+    props.updateEditingAction(props.UUID)
+  }
+
   return (
     <div>
       <form onSubmit={runAction} style={{display:"flex", flexFlow:"column wrap"}}>
         {getRunFields()}
         <input type="submit" value="Run" />
       </form>
+      <button onClick={updateEditingAction}>Edit</button>
       <EnhancedZIoTResponse postUrl={postUrl} />
     </div>
   )
@@ -155,7 +160,7 @@ const Action = (props) => {
           }
         </div>
         {renderOptions &&
-          <ActionOptions name={props.name} args={props.args} UUID={props.UUID} />
+          <ActionOptions name={props.name} args={props.args} UUID={props.UUID} updateEditingAction={props.updateEditingAction} />
         }
       </div>
     </OutsideClickHandler>
