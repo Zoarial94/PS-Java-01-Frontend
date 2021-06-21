@@ -10,11 +10,10 @@ const EditingAction = (props) => {
     const formParams = new URLSearchParams(new FormData(e.target).entries()).toString();
     axios.post("/api/action/" + props.action.UUID + "/updateInfo?" + formParams)
       .then(result => {
-        console.log(result)
       })
       .catch(error => {
-        console.log(error)
       });
+      props.updateEditingAction(null);
   }
 
   return (
@@ -24,13 +23,13 @@ const EditingAction = (props) => {
         <form onSubmit={updateAction} style={{ display: "flex", flexFlow: "column wrap" }}>
 
           <label htmlFor="securityLevel" >Security Level</label>
-          <input type="text" name="securityLevel" value={props.action.securityLevel}></input>
+          <input type="text" name="securityLevel" key={props.action.name + "secLev"} defaultValue={props.action.securityLevel}></input>
           <label htmlFor="encrypt">Encryped</label>
-          <input type="text" name="encrypt" value={props.action.encrypt.toString()}></input>
+          <input type="text" name="encrypt" key={props.action.name + "encrypt"} defaultValue={props.action.encrypt.toString()}></input>
           <label htmlFor="local">Local</label>
-          <input type="text" name="local" value={props.action.local.toString()}></input>
+          <input type="text" name="local" key={props.action.name + "local"} defaultValue={props.action.local.toString()}></input>
           <label htmlFor="desc">Description</label>
-          <input type="text" name="desc" value={props.action.description} />
+          <input type="text" name="desc" key={props.action.name + "desc"} defaultValue={props.action.description} />
           <input type="submit" value="Update" />
         </form>
       </div>

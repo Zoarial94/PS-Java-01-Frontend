@@ -47,9 +47,11 @@
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
-  border:#61dafb;
+  border: #5e596a;
+  border-radius: 8px;
+  background-color: #322b40;
   border-width: 2px;
-  border-style: dotted;
+  border-style: solid;
   height: 92vh;
     scrollbar-color: blueviolet lightgreen;
 }
